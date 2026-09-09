@@ -1,6 +1,6 @@
 ---
 name: update-skills
-description: Reconcile duplicated skills between the project's .claude/skills folder (Dropbox-synced across machines) and the user-level ~/.claude/skills folder (shared across projects on this machine). Finds skills present in both, diffs them, infers which copy is newer, asks the user to confirm, then copies the confirmed newer copy over the older one so both locations match. If the project has no .claude/skills folder, creates it and seeds it with the relevant user-level skills (asking when relevance is unclear). Use when the user runs /update-skills or asks to sync/reconcile their skills.
+description: Reconcile duplicated skills between the project's .claude/skills folder (Dropbox-synced across machines) and the user-level ~/.claude/skills folder (shared across projects on this machine). Finds skills present in both, diffs them, infers which copy is newer, asks the user to confirm, then copies the confirmed newer copy over the older one so both locations match. Skills present in only one location are copied to the other so every skill lives in both places. Use when the user runs /update-skills or asks to sync/reconcile their skills.
 ---
 
 # Update duplicated skills
@@ -14,11 +14,7 @@ Edits sometimes land in only one copy. This skill reconciles them.
 
 ## Step 1 — Enumerate and match
 
-List skill directories (those containing a `SKILL.md`) under both locations. Match by directory name. Skills present in only one location: list them for the user's information at the end, but take no action on them (except in the first-time setup case below).
-
-### First-time setup: project has no `.claude/skills/` folder
-
-If the project has no `.claude/skills/` folder at all, create it and copy the *relevant* skills from the user-level folder into it. "Relevant" is a judgment call: include skills useful for this project's kind of work (e.g., for an academic paper: citation checks, exhibit checks, spellcheck, PDF reading), and include update-skills itself so its latest version travels across machines; exclude only skills that are for personal use or clearly unrelated to the project (e.g., travel-agent). Before copying, list the proposed set and the exclusions; if unsure whether a skill belongs, ask the user (via AskUserQuestion) rather than guessing. Then proceed to Step 6 and report what was copied.
+List skill directories (those containing a `SKILL.md`) under both locations. Match by directory name. Skills present in only one location are handled in Step 5b.
 
 ## Step 2 — Compare each matched pair
 
@@ -46,6 +42,10 @@ Then ask the user to confirm which copy is most recent, using AskUserQuestion wi
 
 For each confirmed skill, copy the newer skill directory over the older location so the two are identical (e.g., `Copy-Item -Recurse -Force <newer>\* <older>\`). If the older copy contains files that do not exist in the newer copy, do not silently delete them — tell the user which files would be removed and confirm before deleting.
 
+## Step 5b — Copy one-location skills to the other location
+
+Skills that exist in only one of the two locations should end up in both. List them (noting which location each currently lives in), then confirm with the user in a single AskUserQuestion (multi-select over the skills — one decision), in case a skill is deliberately kept in one place. Copy each confirmed skill directory to the missing location, preserving modification times (e.g., `Copy-Item -Recurse`, or `cp -rp` in bash), so future timestamp comparisons in Step 3 remain meaningful.
+
 ## Step 6 — Report
 
-Summarize: which skills were in sync, which were updated and in which direction, and which exist in only one location.
+Summarize: which skills were in sync, which were updated and in which direction, and which were copied to the other location (plus any the user chose to keep in one place).
