@@ -135,4 +135,8 @@ If the user reports that double-clicking in SumatraPDF no longer jumps to the li
 ## Step-by-step instructions must be fully specific
 When giving the user step-by-step instructions (e.g., to run code on a server), every step must be self-contained and executable as written. Never say "upload the modified files" without listing each file by name and its destination path, and never say "check that X exists" without giving the exact command that performs the check (e.g., an `ls -l` with the full paths). The same applies to "set the flags", "look at the log", etc.: name the flag, the value, the file, and the command. If a step cannot be made specific, say what information is missing instead of leaving the step vague.
 
+Do not give the user manual editing steps that I can do myself. If a run requires changing a file (e.g., setting the run flags in `00_run.do`, toggling flags in `graphs_crop.py`, editing a path), make the edit in the local copy, include that file in the list to upload (with its md5sum), and drop the step. The user's steps should reduce to: upload these named files, run these commands, check these outputs, sync back these files.
+
+Why: on 2026-09-10 the server instructions told the user to set four locals to 1 in `00_run.do` by hand, when I could have set them in the local file being uploaded.
+
 Why: on 2026-09-10, server instructions said "upload these six files" without naming them in that step and "check that the inputs exist" without a command; the user had to ask for the specifics.
