@@ -76,15 +76,16 @@ Write `.claude/typos_{YYYYMMDD_HHMMSS}.md` in the project's `.claude/` folder (t
 
 | File | Line | Original | Fix | Notes |
 |---|---|---|---|---|
-| paper/appendix.tex | 123 | `can be aleviated though email` | `can be alleviated through email` | two errors in one span |
+| paper/appendix.tex | [123](../paper/appendix.tex#L123) | `can be aleviated though email` | `can be alleviated through email` | two errors in one span |
 
 ## Unsure
 
 | File | Line | Original | Suggested | Why unsure |
 |---|---|---|---|---|
-| paper/main.tex | 456 | `take-up` / `takeup` | pick one | both forms used; 14 vs 3 occurrences |
+| paper/main.tex | [456](../paper/main.tex#L456) | `take-up` / `takeup` | pick one | both forms used; 14 vs 3 occurrences |
 ```
 
+- `Line` is a markdown link so the user can click straight to the line: `[123](<path from the report file to the source file>#L123)`. The report lives in `.claude/`, so a source file at the project root is `../main.tex#L123` and one in `paper/` is `../paper/main.tex#L123`. When a row covers several lines, link each number separately (`[400](../main.tex#L400), [997](../main.tex#L997)`), and link line numbers mentioned in Notes the same way (`[L855](../main.tex#L855)`). Keep `File` as plain text.
 - `Original` is a **verbatim substring of the source line**, in backticks, long enough to be unique on that line and to include every character the fix changes (keep surrounding LaTeX such as braces and `\%` exactly). `Fix` is the replacement for exactly that substring. `/fix-typos` applies `Original` → `Fix` with an exact-match edit, so both must be copyable as-is.
 - One row per occurrence; sort rows by file (document order) then line.
 - If a typo is in a **generated** file (`results/` etc.), never propose editing it: put "fix in generating script" in Notes.
