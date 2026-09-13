@@ -7,6 +7,9 @@ Never compile a tex document with a single pdflatex pass; the references come ou
 
 Use `-interaction=nonstopmode` on the pdflatex passes.
 
+## Sync a project's code repo before answering questions about the code
+Some projects keep their analysis code in a separate repo whose path is recorded in that project's memory (e.g., a `project` memory naming the repo location). If such a repo is specified, then before answering any question about the code, check whether the local copy is up to date — provided it is a git repo (not all projects use git; if there is no `.git`, skip the check). Run `git -C <repo-path> fetch`, then `git -C <repo-path> status -uno`. If the local copy is behind and can fast-forward, pull; if it has diverged or has local modifications, tell the user rather than resolving it myself.
+
 ## If an edit fails, stop immediately
 If an Edit/Write tool call fails (e.g., because the safety classifier is temporarily unavailable), do NOT retry it. Stop, show the user the exact change that was intended (file, old text, new text), and let them make the edit themselves.
 
@@ -29,6 +32,12 @@ Exception: ordinary dead metaphors common in academic and technical prose are fi
 
 ## Do not use other common AI verbal ticks
 For example, do not use "sharper" or "sharpest" in responses or in text I am writing in a document. 
+
+## Hard-wrap code blocks in responses
+Fenced code blocks in the VSCode extension do not soft-wrap, so hard-wrap the lines inside them at a readable width (~80-90 characters). For LaTeX prose this is copy-safe: a single newline within a paragraph is an ordinary space to LaTeX. Do not introduce breaks that change meaning: no break right after a `%`, none inside a macro name, and no blank lines within what should be one paragraph. Leave lines unwrapped when a break would alter content (table rows where alignment matters; shell commands, unless wrapped with explicit continuation characters). For short snippets, prefer inline code, which wraps naturally.
+
+## Do not make inanimate objects the agents of action verbs
+When writing prose (in responses or in documents), do not give an inanimate subject an agentive action verb, e.g., "these marketing campaigns convert their 23\% open rate into a 1\% click rate", "the footnote accomplishes...", "the paragraph manages to...", "the design chooses...". Restructure so that people are the subject ("only 1\% of recipients clicked") or so that the verb is neutral ("for these campaigns, the average click rate was just 1\%, far below the 23\% open rate"). Exceptions (confirmed by the user 2026-09-10): (1) conventional academic usages with an inanimate subject remain fine, e.g., "the table shows", "the paper argues", "the results suggest/indicate", "the model predicts", "column 1 reports"; (2) authors as subject are fine ("Smith and Jones randomize referrals and find..."); (3) a quantity or outcome as the subject of a change-of-state verb is fine ("estimates fall", "trust and adoption increase", "the coefficient rises"). The target is agentive verbs that anthropomorphize objects ("campaigns convert", "the footnote accomplishes", "beliefs suppress"), not every sentence with an inanimate subject. Economic agents (firms, managers, consumers, sellers) are actors, not inanimate objects, and may take agentive verbs.
 
 ## Do not use mystery-novel framing when presenting evidence
 Never introduce evidence, results, or explanations with detective-story or narrative-suspense language, e.g., "A first clue is...", "a hint that...", "a telltale sign", "the culprit is...", "smoking gun", "the mystery deepens", "the story becomes clear". This applies to my responses and especially to academic prose I draft: an academic paper states facts and results directly ("Realized profits are tightly linked to default: ..."), it does not stage them as a mystery to be unraveled ("A first clue is that realized profits are tightly linked to default: ..."). Standard economics usage of "puzzle" (e.g., "the equity premium puzzle") remains fine.
@@ -133,10 +142,15 @@ Do not do this in throwaway checkouts (e.g., cloned third-party repos the user i
 If the user reports that double-clicking in SumatraPDF no longer jumps to the line in VS Code (in any project), read `C:\Users\skh2820\.claude\memory\sumatrapdf_synctex_fix.md` for the current setup and troubleshooting order. Since 2026-07-24 the setup is self-updating: `InverseSearchCmdLine` in `C:\Dropbox\Programs\SumatraPDF\SumatraPDF-settings.txt` runs `wscript.exe "C:\Dropbox\Programs\SumatraPDF\inverse_search.vbs" -r -g "%f:%l"`, a hidden-window wrapper around VS Code's self-updating `bin\code.cmd`, so VS Code updates renaming the versioned hash folder no longer break it. Remember Sumatra rewrites its settings file on exit (edit only while it is closed). Full history: `C:\Dropbox\FinancialInclusion\iZettle_fee\.claude\memory\setup_synctex_inverse_search.md` (Dropbox-synced, available on all machines).
 
 ## Step-by-step instructions must be fully specific
-When giving the user step-by-step instructions (e.g., to run code on a server), every step must be self-contained and executable as written. Never say "upload the modified files" without listing each file by name and its destination path, and never say "check that X exists" without giving the exact command that performs the check (e.g., an `ls -l` with the full paths). The same applies to "set the flags", "look at the log", etc.: name the flag, the value, the file, and the command. If a step cannot be made specific, say what information is missing instead of leaving the step vague.
+When giving the user step-by-step instructions (e.g., to run code on a server), every step must be self-contained and executable as written. Never say "upload the modified files" without listing each file by name and its destination path, and never say "check that X exists" without giving the exact command that performs the check (e.g., an `ls -l` with the full paths). The same applies to "set the flags", "look at the log", etc.: name the flag, the value, the file, and the command. If a step cannot be made specific, say what information is missing instead of leaving the step vague. Never point back to a list given in an earlier message ("the files listed earlier"); repeat the list in the step itself, since the user reads the steps as a unit.
 
 Do not give the user manual editing steps that I can do myself. If a run requires changing a file (e.g., setting the run flags in `00_run.do`, toggling flags in `graphs_crop.py`, editing a path), make the edit in the local copy, include that file in the list to upload (with its md5sum), and drop the step. The user's steps should reduce to: upload these named files, run these commands, check these outputs, sync back these files.
 
 Why: on 2026-09-10 the server instructions told the user to set four locals to 1 in `00_run.do` by hand, when I could have set them in the local file being uploaded.
 
 Why: on 2026-09-10, server instructions said "upload these six files" without naming them in that step and "check that the inputs exist" without a command; the user had to ask for the specifics.
+
+## Do not repeat `cd` in every step of server command-line instructions
+When giving multi-step command-line instructions (e.g., for a server run), `cd` to the working folder once, in the first step that needs it. Later steps that run in the same shell and the same folder should not start with the same `cd` again. Add a `cd` only when the step needs a different folder, or when the steps are clearly separated by something that resets the shell (a new login, a batch job).
+
+Why: on 2026-09-10 every step of a server run started with the same `cd /gpfs/.../SavingsLotteries-repl`, which added clutter without adding information.
