@@ -7,7 +7,7 @@ description: Apply the corrections listed in the "To fix" section of the latest 
 
 ## Step 1: Locate and re-read the report
 
-Reports live in the project's `.claude/` folder as `typos_{YYYYMMDD_HHMMSS}.md`. Use the report passed as the skill argument if given; otherwise the one with the latest timestamp in its filename (confirm with the user if it looks stale, e.g., older than the source files' last edits).
+Reports live in the project's `.claude/` folder as `typos_{YYYYMMDD_HHMMSS}.md`. Use the report passed as the skill argument if given (this may be a `/check-ra-text` report, `ra_text_{timestamp}.md`, which has the same `## To fix`/`## Unsure` tables plus a `## Rewrites` section and a `## Recurring patterns` section: apply only `## To fix` and leave the other sections untouched); otherwise the one with the latest timestamp in its filename (confirm with the user if it looks stale, e.g., older than the source files' last edits).
 
 **Always re-read the report now, even if you wrote it earlier in this session**: the user may have moved rows between `## To fix` and `## Unsure`, or edited a `Fix`. Act only on the current contents. Rows under `## Unsure` are not applied unless the user moved them into `## To fix`.
 
