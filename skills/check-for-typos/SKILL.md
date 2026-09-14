@@ -24,7 +24,7 @@ Run the helper script from the skill directory (never a temp copy):
 python <path-to-this-skill>/scripts/collect_tex.py "<root>.tex" --project-root "<project root>"
 ```
 
-It writes `.claude/typos_source_<timestamp>.txt`: the root file with every `\input`/`\include`/`\subfile` expanded in place (document order), comments stripped, blank lines dropped, and each remaining line prefixed `path:line:` with the *original* line number. It also:
+It writes `.claude/typos_source_<timestamp>.txt`: the root file with every `\input`/`\include`/`\subfile` expanded in place (document order), comment text stripped but the `%` that starts each comment kept (see Step 4 on line-break spacing), blank lines dropped, and each remaining line prefixed `path:line:` with the *original* line number. It also:
 
 - drops the argument of macros the document defines as empty (`--drop-macros`, default `cut,cutrr`) — check the preamble of the project's main file and adjust if other no-op macros exist;
 - skips includes under `results/`, `tables/`, `figures/`, `numbers/` as script-generated and lists them (`--include-generated` to read them anyway — only useful for spotting typos to fix in the generating scripts);
@@ -50,12 +50,14 @@ Read the LaTeX as a copyeditor would read the rendered text: mentally drop marku
 - Wrong or missing prepositions only when unambiguously wrong ("focused in monitoring" → "focused on").
 - Punctuation and typesetting glitches visible in the output: double periods or commas, missing space after sentence punctuation, space before a period/comma, unbalanced parentheses/brackets/braces in prose, wrong LaTeX quote marks (`"word"` or `''word``` instead of ``` ``word'' ```), a period inside vs outside a parenthesis inconsistently, stray characters, a sentence starting lowercase after a period, capitalization errors in proper nouns.
 - Cross-reference text errors: "Table" where the `\ref` is a figure, "Section" for an appendix, an `\eqref` referred to as a table, a footnote sentence that does not end with a period.
+- Line-break spacing errors. A newline in the source is a space in the output unless the line ends with `%`, and the collected text keeps every `%` for exactly this check. Flag a line that does **not** end in `%` when the next non-blank line starts with `,`, `;`, `.`, `)`, `\footnote`, or `\cite`: the output will show a space before that punctuation or footnote mark. The fix is a trailing `%` on the first line (or moving the punctuation up), not stripping the `%`. Conversely, a line that ends in `%` followed by a line starting with punctuation renders correctly; do not flag it. Look at the `%`, not at the raw line break, before deciding either way.
 
 **Unsure** — list separately, with a one-line reason, when it could be deliberate:
 
 - Inconsistent forms within the document (take-up vs takeup, FinTech vs fintech, e-mail vs email, "percent" vs `\%`), British vs American spelling mixed.
 - Possible missing article or awkward preposition where the sentence is still grammatical.
 - Text inside `\new{}`/`\added{}` that reads like an unfinished edit.
+- A `%` in the middle of a prose line that hides the rest of the line (the collected text ends at that `%`). This may be a deliberate comment-out, but it may also be a `%` meant for the end of the line that now silently drops a clause or a citation; give the hidden text's location so the user can decide.
 - Hardcoded numbers or dates that look mistyped (these belong to /check-hardcoded, but flag an obvious digit slip).
 
 **Do not flag** — out of scope, even if you would write it differently: word choice, sentence structure, hedging, redundancy, tone, Oxford commas, hyphenation preferences that are consistent, en/em-dash style, house-style choices such as colon capitalization (see project memory for settled conventions and do not re-litigate them), and anything inside formulas, `\label`/`\ref` keys, URLs, file paths, or bib keys.
