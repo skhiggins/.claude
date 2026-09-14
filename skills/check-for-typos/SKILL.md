@@ -57,7 +57,7 @@ Read the LaTeX as a copyeditor would read the rendered text: mentally drop marku
 - Inconsistent forms within the document (take-up vs takeup, FinTech vs fintech, e-mail vs email, "percent" vs `\%`), British vs American spelling mixed.
 - Possible missing article or awkward preposition where the sentence is still grammatical.
 - Text inside `\new{}`/`\added{}` that reads like an unfinished edit.
-- A `%` in the middle of a prose line that hides the rest of the line (the collected text ends at that `%`). This may be a deliberate comment-out, but it may also be a `%` meant for the end of the line that now silently drops a clause or a citation; give the hidden text's location so the user can decide.
+- A `%` in the middle of a prose line hides the rest of the line (the collected text ends at that `%`). Treat this as a deliberate comment-out and do not flag it: the user comments text out rather than deleting it so it can be restored later. The one exception is an unescaped `%` that follows a number ("10% of accounts", "the 5% level"), which is a typo for `\%` and belongs under **To fix** because it also swallows the rest of the line; the collected text shows such a line ending right after the number.
 - Hardcoded numbers or dates that look mistyped (these belong to /check-hardcoded, but flag an obvious digit slip).
 
 **Do not flag** — out of scope, even if you would write it differently: word choice, sentence structure, hedging, redundancy, tone, Oxford commas, hyphenation preferences that are consistent, en/em-dash style, house-style choices such as colon capitalization (see project memory for settled conventions and do not re-litigate them), and anything inside formulas, `\label`/`\ref` keys, URLs, file paths, or bib keys.
