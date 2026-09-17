@@ -6,8 +6,11 @@ Usage:
     python collect_tex.py ROOT.tex [--out FILE] [--include-generated]
                           [--drop-macros cut,cutrr] [--project-root DIR]
 
-- Comments are stripped (a line's text after the first unescaped `%`); lines left blank
-  are dropped. Original line numbers are preserved in the prefixes.
+- Comment text is stripped (a line's text after the first unescaped `%`), but the `%`
+  itself is kept, so the reader can see where a line ends in `%` (no space at the line
+  break) versus a bare newline (a space in the output) and whether a mid-line `%` hides
+  the rest of the line. Lines left blank are dropped; a line holding only `%` is kept.
+  Original line numbers are preserved in the prefixes.
 - Text inside the macros named by --drop-macros (default: cut,cutrr — macros this
   project defines as empty, so their argument never compiles) is removed, braces
   balanced, newlines kept so line numbers stay correct.
@@ -38,7 +41,7 @@ def strip_comment(line):
         if j > 0 and line[j - 1] == "\\":
             i = j + 1
             continue
-        return line[:j]
+        return line[:j + 1]  # keep the % so line-break spacing can be judged
 
 
 def drop_macros(text, names):
