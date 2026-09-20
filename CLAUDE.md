@@ -36,6 +36,9 @@ Do not give the user manual editing steps that I can do myself. If a run require
 ### Do not repeat `cd` in every step of server command-line instructions
 When giving multi-step command-line instructions (e.g., for a server run), `cd` to the working folder once, in the first step that needs it. Later steps that run in the same shell and the same folder should not start with the same `cd` again. Add a `cd` only when the step needs a different folder, or when the steps are clearly separated by something that resets the shell (a new login, a batch job).
 
+### Recheck file state before restating an earlier finding
+Before restating something I found earlier in the session about the state of files (a folder is empty, a file is missing, a file contains some text, a line reads a certain way), recheck it with a fresh tool call rather than relying on the earlier check. The user edits files and adds data between turns, so an earlier observation can be stale by the time I repeat it. This applies especially to claims like "X cannot be checked because the file is missing" and to quoting the current text of a file the user is editing. If rechecking is impossible, say that the statement reflects an earlier check and may be out of date.
+
 ## Writing style (responses and documents)
 
 ### Never say "honest", "honestly", "genuine", "genuinely", or "real" (as a filler intensifier)
