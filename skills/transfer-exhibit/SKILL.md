@@ -46,6 +46,24 @@ For exhibits that appear in **both** documents, the notes *text* is not duplicat
 - **Response side**: the notes block keeps its own wrappers (`\footnotesize`, `\vspace`, `\begin{justify}` [+ `\emergencystretch=3em`], `\end{justify}`, `\normalsize` for tables; `\footnotesize \singlespacing` inside the figure env for figures), but the text itself is replaced by a single line: `\quotenotes{<paper-file-basename>}{<tag>}` — e.g. `\quotenotes{appendix_tables_notonline}{notes-tab-het-all-ctrl-busy}`. `\quotenotes` is defined in the response preamble as `\ExecuteMetaData[../#1.tex]{#2}`; the first argument is the paper-side file (without `.tex`) that physically contains the tagged notes (`appendix_tables_notonline`, `appendix_figures_notonline`, `appendix_tables_supplemental`, ...), not necessarily the main paper file.
 - **Editing notes**: edit the paper's tagged text only; the response doc updates on recompile. Never re-introduce literal notes text in the response doc for a shared exhibit. `\inputnumber` inside tagged notes works in both docs (each defines it with its own path prefix), and `\ref`/`\eqref` to paper labels resolve in the response doc via `\externaldocument`.
 - **Captions are not shared**: caption titles are still duplicated (paper `\caption{Title}` vs response `\caption*{Table~\ref{...}: Title}`) and must match verbatim.
+- **Preamble requirements (response side)**: `\quotenotes` is not a package macro; the response doc's preamble must define it (in iZettle_fee it already does). Before introducing a `\quotenotes` call into a response doc, check that its preamble defines the macro; if not (e.g., a fresh response doc for a new journal, or another project adopting this skill), add to the preamble:
+
+  ```latex
+  \usepackage{catchfilebetweentags}
+  % Patch: the package rescans quoted text with \endlinechar=-1, which deletes
+  % line endings entirely (paragraph breaks and interword spaces are lost).
+  % Restore the standard \endlinechar for the rescan so blank lines yield \par.
+  \usepackage{etoolbox}
+  \makeatletter
+  \patchcmd{\CatchFBT@Fin@l}{\endlinechar\m@ne}{\endlinechar`\^^M}{}%
+    {\PackageError{responses}{Patching catchfilebetweentags failed}{}}
+  \makeatother
+  % For pulling exhibit notes tagged in the paper's appendix files, so notes text
+  % lives only in the paper; #1 = file (without .tex) in paper/, #2 = tag.
+  \newcommand{\quotenotes}[2]{\ExecuteMetaData[../#1.tex]{#2}}
+  ```
+
+  The `../#1.tex` path assumes the response doc sits one directory below the paper's tex files; adjust the prefix if the layout differs. The related `\quotepaper` macro (for quoting paper passages) is defined alongside this in iZettle_fee but additionally requires the `paper` quote environment; it is not needed for `\quotenotes`. The `\inputnumber` and `\ref`-resolution behavior described under **Editing notes** also assumes the response doc defines `\inputnumber` and loads `xr-hyper` with `\externaldocument{<main paper>}`.
 
 ## Required differences between the two versions
 
