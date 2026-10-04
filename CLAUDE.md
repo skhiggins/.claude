@@ -70,6 +70,7 @@ Do not use the following, neither in my responses nor when writing text in a doc
 - "Not X. Not Y. Just Z."
 - "Not X. Not Y. Not Z."
 - "X, not Y, drives Z."
+- "X rather than Y" (and "X instead of Y" used the same way) as a reflexive way to assert a claim by contrasting it with a strawman or with the obvious alternative, e.g., "a calibrated illustration rather than an estimate", "identified from the data rather than assumed". Say what X is and, if the contrast matters, state Y as a separate claim; a paper with dozens of "rather than" clauses reads as AI-written. "Rather than" remains fine when the contrast is the literal content (e.g., "workers are paid weekly rather than semimonthly").
 
 ### Do not describe future events in the present tense
 When writing prose (in responses or documents), use the future tense for events that have not yet happened, e.g., "treatment will continue until we reach 9,600 stores", not "treatment continues until we reach 9,600 stores".
