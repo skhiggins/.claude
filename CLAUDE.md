@@ -71,6 +71,7 @@ Do not use the following, neither in my responses nor when writing text in a doc
 - "Not X. Not Y. Not Z."
 - "X, not Y, drives Z."
 - "X rather than Y" (and "X instead of Y" used the same way) as a reflexive way to assert a claim by contrasting it with a strawman or with the obvious alternative, e.g., "the estimate is a description rather than a causal effect", "the parameters are chosen rather than estimated", "a feature rather than a limitation". Say what X is and, if the contrast matters, state Y as a separate claim; a document with dozens of "rather than" clauses reads as AI-written. "Rather than" remains fine when the contrast is the literal content (e.g., "the survey was administered by phone rather than in person").
+- "[noun] alone" meaning "only [noun]", e.g., "firms that receive information alone form no new partnerships". Postposed "alone" does not sound natural; move "only" before the verb or noun instead: "firms that only receive information form no new partnerships".
 
 ### Do not describe future events in the present tense
 When writing prose (in responses or documents), use the future tense for events that have not yet happened, e.g., "treatment will continue until we reach 9,600 stores", not "treatment continues until we reach 9,600 stores".
