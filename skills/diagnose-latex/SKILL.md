@@ -43,6 +43,7 @@ The script unwraps TeX's 79-character line breaks (so labels and file names spli
 
 How to read it:
 
+- **Do not trust "Errors: 0" blindly.** If the script prints a WARNING about unparsed `file:line: message` lines, read those log lines directly; they are usually errors in a format the parser does not recognize. When the IDE diagnostics (Step 2) show errors the script missed, confirm with `grep -nE "^!|:[0-9]+: " <log>`.
 - **Focus on the first error.** Later errors are usually consequences of it (one missing `}` can produce a dozen).
 - **File attribution:** with `-file-line-error` output the file is exact; otherwise it comes from TeX's open-file stack, which is a heuristic. When it is marked heuristic, confirm it by searching the candidate files for the context text (the part of the `l.<n>` line before the break).
 - **The TeX context:** in `l.<n> <before>` followed by `<after>` on the next line, TeX had read up to the end of `<before>` when the error occurred. The culprit is usually the last token of `<before>`.
