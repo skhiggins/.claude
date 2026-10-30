@@ -26,7 +26,11 @@ MAX_PRINT_LINE = 79  # TeX Live default; log lines are hard-wrapped at this widt
 FILE_EXT = (r"tex|sty|cls|cfg|def|clo|fd|bbl|aux|out|toc|lof|lot|ldf|ltx|lbx|bbx|"
             r"cbx|dbx|bcf|tikz|pgf|dict|mkii|code\.tex|w18|nav|snm|vrb|ind|gls")
 OPEN_FILE_RE = re.compile(r"\((\"?[^\s()\"]+?\.(?:" + FILE_EXT + r")\"?)(?=[\s()]|$)")
-FILE_LINE_ERR_RE = re.compile(r"^(\S[^:]*?\.(?:" + FILE_EXT + r")):(\d+): (.*)$")
+# The optional "c:" prefix matters on Windows: LaTeX Workshop passes absolute paths,
+# so errors read "c:/Dropbox/.../file.tex:294: ...", and the path may contain spaces.
+FILE_LINE_ERR_RE = re.compile(r"^((?:[A-Za-z]:)?[^:\s][^:]*?\.(?:" + FILE_EXT + r")):(\d+): (.*)$")
+# Loose pattern for the sanity check: any line that looks like "<something>:<n>: <msg>"
+LOOSE_FILE_LINE_RE = re.compile(r"^\S.*?:\d+: \S")
 CONTEXT_LINE_RE = re.compile(r"^l\.(\d+) ?(.*)$")
 
 
@@ -167,6 +171,17 @@ def parse_log(path, max_errors):
     if len(errors) > max_errors:
         print(f"  ... {len(errors) - max_errors} more errors not shown (later errors are often "
               f"consequences of the first)")
+    # Sanity check: lines that look like file-line-error output but were not parsed,
+    # so a format the regexes miss cannot silently produce "Errors: 0"
+    parsed = {e["log_line"] - 1 for e in errors}
+    unparsed = [(i, l) for i, l in enumerate(lines)
+                if i not in parsed and LOOSE_FILE_LINE_RE.match(l)
+                and not l.startswith(("l.", "Package ", "LaTeX ", "Overfull", "Underfull"))]
+    if unparsed:
+        print(f"  WARNING: {len(unparsed)} log line(s) look like 'file:line: message' errors "
+              f"but were not parsed; read them directly:")
+        for i, l in unparsed[:10]:
+            print(f"    log line {i + 1}: {l.strip()[:200]}")
     print("== Warnings relevant to diagnosis ==")
     print(f"  Missing files: {', '.join(missing_files) or 'none'}")
     print(f"  Undefined references ({len(undefined_refs)}): {', '.join(undefined_refs[:30]) or 'none'}")
