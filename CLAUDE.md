@@ -122,6 +122,18 @@ Use `-interaction=nonstopmode` on the pdflatex passes.
 ### Never edit table files to fix LaTeX compilation issues
 Table `.tex` files are always produced automatically by scripts (Stata/R/Python), even when they are pasted or `\input` into a paper or response doc's tex file. Never edit them directly to fix compilation errors; any manual fix will be silently overwritten the next time the scripts run. Instead, fix the problem in the document that includes the table (e.g., add the missing `tabular` wrapper around the `\input`), or point out that the generating script needs to change.
 
+### Use \citet{} and \citep{}, never \cite{}
+When writing citations in LaTeX, use `\citet{}` for textual citations ("Author (Year)") and `\citep{}` for parenthetical ones ("(Author, Year)"); never use bare `\cite{}`. Its output depends on the package: natbib prints it like `\citet`, but biblatex prints "Author Year" with no parentheses, so the same text renders differently after a switch between them.
+
+### Write inline math as $x$
+In LaTeX that I write, use `$x$` for inline math, not `\(x\)`. Leave existing `\(x\)` in place unless asked to change it, and never change it inside script-generated table files (see the rule on table files above).
+
+### Write display math with equation*, never $$
+For an unnumbered display, use `\begin{equation*}...\end{equation*}`; for a numbered one, `\begin{equation}...\end{equation}` with a `\label`; for multi-line displays, `align*` / `align`. Never use `$$...$$`: it is plain TeX, bypasses LaTeX's display spacing, and ignores options such as `fleqn`. `\[...\]` gives the same output as `equation*` under amsmath, but use `equation*` so unnumbered and numbered displays share one form.
+
+### Place footnotes at the end of a sentence
+Put the `\footnote{...}` call at the end of the sentence, immediately after the closing punctuation (`... cost.\footnote{...}`). Never attach a footnote to a word or phrase in the middle of a sentence. If the footnote is about one part of a long sentence, still place it at the end of that sentence, or split the sentence.
+
 ### SumatraPDF double-click (SyncTeX inverse search) fix
 If the user reports that double-clicking in SumatraPDF no longer jumps to the line in VS Code (in any project), read `C:\Users\skh2820\.claude\memory\sumatrapdf_synctex_fix.md` for the current setup and troubleshooting order. The setup is self-updating: `InverseSearchCmdLine` in `C:\Dropbox\Programs\SumatraPDF\SumatraPDF-settings.txt` runs `wscript.exe "C:\Dropbox\Programs\SumatraPDF\inverse_search.vbs" -r -g "%f:%l"`, a hidden-window wrapper around VS Code's self-updating `bin\code.cmd`, so VS Code updates renaming the versioned hash folder no longer break it. Remember Sumatra rewrites its settings file on exit (edit only while it is closed). Full history: `C:\Dropbox\FinancialInclusion\iZettle_fee\.claude\memory\setup_synctex_inverse_search.md` (Dropbox-synced, available on all machines).
 
